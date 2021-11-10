@@ -1,6 +1,6 @@
 {
   "development": {
-    "url": "YOUR_ELEPHANTSQL_URL_HERE",
+    "url": "postgres://tuicensd:bf-SsvDnqTZW2OOGGrsE5oHxPJBauaxg@abul.db.elephantsql.com/tuicensd",
     "dialect": "postgres",
     "operatorsAliases": "0"
   },
