@@ -36,6 +36,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
         userId: userId,
       },
       order: [["createdAt", "DESC"]],
+      limit: 7,
     });
     res.status(200).send({ entries });
   } catch (e) {
