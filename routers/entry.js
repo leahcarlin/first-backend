@@ -1,14 +1,49 @@
+var axios = require("axios").default;
 const { Router } = require("express");
-const authMiddleware = require("../auth/middleware");
 const Entry = require("../models").entry;
+const authMiddleware = require("../auth/middleware");
 
 const router = new Router();
 
-// GET /entries/        fetch all entries for user
-// POST /entries/       create new entry
-// DELETE /entries/     delete all entries for user
-// DELETE /entries/:id  delete entry with id "id"
+router.post("/sentiment", async (req, res) => {
+  const { content } = req.body;
+  const options = {
+    method: "GET",
+    url: "https://twinword-emotion-analysis-v1.p.rapidapi.com/analyze/",
+    params: {
+      text: content,
+    },
+    headers: {
+      "x-rapidapi-host": "twinword-emotion-analysis-v1.p.rapidapi.com",
+      "x-rapidapi-key": "1063711ffamsh31af34f715bef9dp14c537jsnf568a3552ef0",
+    },
+  };
 
+  axios
+    .request(options)
+    .then(function (response) {
+      const sentiment = response.data.emotions_detected[0];
+
+      axios
+        .get(
+          `https://api.giphy.com/v1/gifs/search?q=${sentiment}&api_key=UGwSvXyX5MwOX64tVf2q6KF4X9pXrrJV`
+        )
+        .then(function (response) {
+          const randomObj =
+            response.data.data[
+              Math.floor(Math.random() * response.data.data.length) - 1
+            ].images.original.url;
+          res.send(randomObj);
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+
+// GET /entries/        fetch all entries for user
 router.get("/", authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -24,6 +59,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
   }
 });
 
+// POST /entries/       create new entry
 router.post("/", authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -48,6 +84,7 @@ router.post("/", authMiddleware, async (req, res, next) => {
   }
 });
 
+// DELETE /entries/:id  delete entry with id "id"
 router.delete("/:id", authMiddleware, async (req, res, next) => {
   try {
     const entryId = parseInt(req.params.id);
@@ -68,7 +105,8 @@ router.delete("/:id", authMiddleware, async (req, res, next) => {
     next(e);
   }
 });
-
+  
+// DELETE /entries/     delete all entries for user
 router.delete("/", authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.id;
