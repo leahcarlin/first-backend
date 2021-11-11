@@ -42,6 +42,7 @@ router.post("/sentiment", async (req, res) => {
     .catch(function (error) {
       console.error(error);
     });
+});
 
 // GET /entries/        fetch all entries for user
 router.get("/", authMiddleware, async (req, res, next) => {
@@ -105,7 +106,7 @@ router.delete("/:id", authMiddleware, async (req, res, next) => {
     next(e);
   }
 });
-  
+
 // DELETE /entries/     delete all entries for user
 router.delete("/", authMiddleware, async (req, res, next) => {
   try {
