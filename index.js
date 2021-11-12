@@ -5,6 +5,7 @@ const { PORT } = require("./config/constants");
 const authRouter = require("./routers/auth");
 const entryRouter = require("./routers/entry");
 const authMiddleWare = require("./auth/middleware");
+require("dotenv").config();
 
 const app = express();
 /**

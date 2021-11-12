@@ -10,7 +10,7 @@ router.post("/gif", async (req, res, next) => {
     const { sentiment } = req.body;
     const getGif = await axios
       .get(
-        `https://api.giphy.com/v1/gifs/search?q=${sentiment}&api_key=UGwSvXyX5MwOX64tVf2q6KF4X9pXrrJV`
+        `https://api.giphy.com/v1/gifs/search?q=${sentiment}&api_key=${process.env.GKEY}`
       )
       .then(function (response) {
         const randomObj =
