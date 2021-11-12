@@ -51,7 +51,9 @@ router.post("/", authMiddleware, async (req, res, next) => {
     const { content, gifUrl } = req.body;
 
     if (!content) {
-      return res.status(400).send({ message: "Content must be provided" });
+      return res
+        .status(400)
+        .send({ message: "Content must be provided in order to save" });
     }
 
     if (!gifUrl) {
