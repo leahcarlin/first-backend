@@ -1,10 +1,10 @@
 const bcrypt = require("bcrypt");
 const { Router } = require("express");
+var axios = require("axios").default;
 const { toJWT } = require("../auth/jwt");
 const authMiddleware = require("../auth/middleware");
 const User = require("../models/").user;
 const { SALT_ROUNDS } = require("../config/constants");
-
 const router = new Router();
 
 router.post("/login", async (req, res, next) => {
@@ -21,7 +21,7 @@ router.post("/login", async (req, res, next) => {
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(400).send({
-        message: "User with that email not found or password incorrect"
+        message: "User with that email not found or password incorrect",
       });
     }
 
@@ -44,7 +44,7 @@ router.post("/signup", async (req, res) => {
     const newUser = await User.create({
       email,
       password: bcrypt.hashSync(password, SALT_ROUNDS),
-      name
+      name,
     });
 
     delete newUser.dataValues["password"]; // don't send back the password hash
@@ -70,6 +70,34 @@ router.get("/me", authMiddleware, async (req, res) => {
   // don't send back the password hash
   delete req.user.dataValues["password"];
   res.status(200).send({ ...req.user.dataValues });
+});
+
+router.get("/sentiment/:content", async (req, res, next) => {
+  // get and return sentiment from user content
+  const { content } = req.params;
+  var options = {
+    method: "GET",
+    url: "https://twinword-emotion-analysis-v1.p.rapidapi.com/analyze/",
+    params: { text: content },
+    headers: {
+      "x-rapidapi-host": "twinword-emotion-analysis-v1.p.rapidapi.com",
+      "x-rapidapi-key": "2e428ecba8msh9be17c675e69cadp1a93cajsn2a69a500cd62",
+    },
+  };
+
+  axios
+    .request(options)
+    .then(function (response) {
+      const sentiment = response.data.emotions_detected[0];
+      console.log("sentiment?", sentiment);
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+  // use sentiment to search for and return a GIF
+  // const returnGIF = await axios.get(
+  //   `api.giphy.com/v1/gifs/search?q=${sentiment}&api_key=UGwSvXyX5MwOX64tVf2q6KF4X9pXrrJV`
+  // );
 });
 
 module.exports = router;
