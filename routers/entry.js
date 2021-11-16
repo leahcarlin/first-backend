@@ -2,6 +2,7 @@ var axios = require("axios").default;
 const { Router } = require("express");
 const Entry = require("../models").entry;
 const authMiddleware = require("../auth/middleware");
+const { API_KEY } = require("../config/constants");
 
 const router = new Router();
 
@@ -10,7 +11,7 @@ router.post("/gif", async (req, res, next) => {
     const { sentiment } = req.body;
     const getGif = await axios
       .get(
-        `https://api.giphy.com/v1/gifs/search?q=${sentiment}&api_key=${process.env.GKEY}`
+        `https://api.giphy.com/v1/gifs/search?q=${sentiment}&api_key=${API_KEY}`
       )
       .then(function (response) {
         const randomObj =
